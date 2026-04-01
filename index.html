@@ -98,9 +98,31 @@
         color: var(--text);
         outline: none;
       }
+      input[type="number"],
+      select,
+      textarea {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        color: var(--text);
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+      }
       input[type="text"]:focus {
         border-color: rgba(110, 231, 255, 0.45);
         box-shadow: 0 0 0 4px rgba(110, 231, 255, 0.10);
+      }
+      input[type="number"]:focus,
+      select:focus,
+      textarea:focus {
+        border-color: rgba(110, 231, 255, 0.45);
+        box-shadow: 0 0 0 4px rgba(110, 231, 255, 0.10);
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
       }
       button {
         appearance: none;
@@ -139,6 +161,11 @@
         height: 1px;
         background: rgba(255, 255, 255, 0.10);
         margin: 14px 0;
+      }
+      .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 14px;
       }
       table {
         width: 100%;
@@ -223,6 +250,34 @@
       .small {
         font-size: 12px;
       }
+
+      @media (max-width: 520px) {
+        .wrap {
+          padding: 16px 12px 64px;
+        }
+        .title {
+          font-size: 18px;
+        }
+        button {
+          padding: 12px 14px;
+          border-radius: 14px;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+          padding: 12px 12px;
+        }
+        table {
+          min-width: 720px; /* 小屏用横向滚动显示 2×11 表格 */
+        }
+        .opt {
+          padding: 14px;
+        }
+        .opt input {
+          transform: translateY(2px) scale(1.15);
+        }
+      }
     </style>
   </head>
   <body>
@@ -279,7 +334,7 @@
             <div class="notice">
               <div><strong>隐私</strong></div>
               <div class="small" style="margin-top: 6px">
-                建议不要收集真实姓名/手机号。此页面默认只记录：参与者ID、时间戳、每轮收益、浏览器信息（用于排错）。
+                此页面不收集个人隐私信息，只记录：参与者ID、时间戳、每轮收益、浏览器信息（用于排错）。
               </div>
             </div>
           </div>
@@ -296,18 +351,20 @@
           </div>
         </div>
 
-        <table aria-label="2x11 表格">
-          <thead>
-            <tr id="tableRounds">
-              <th>轮次</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr id="tablePayoffs">
-              <td>收益</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-scroll" aria-label="2x11 表格（可横向滑动）">
+          <table>
+            <thead>
+              <tr id="tableRounds">
+                <th>轮次</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="tablePayoffs">
+                <td>收益</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <div class="hr"></div>
 
@@ -335,6 +392,50 @@
           </div>
         </div>
         <div class="hr"></div>
+        <div class="notice">
+          <div><strong>抽奖说明（选填联系方式）</strong></div>
+          <div class="small" style="margin-top: 6px">
+            如希望领取个人投资风险报告、参与抽奖并进行进一步投资偏好自测，请将结果发送至QQ群在线表格或邮箱newmanholiday@gmail.com。我们将从参与者中抽取约一半的幸运参与者，赠送线上与实物奖品，包括 Sony 音响、蓝牙耳机、金融相关书籍以及量化模型学习资料。
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="row">
+          <div class="field" style="min-width: 220px; flex: 1">
+            <label for="majorInput">专业或是否有投资经验（选填）</label>
+            <input id="majorInput" type="text" placeholder="例如：金融工程" autocomplete="off" />
+          </div>
+          <div class="field" style="min-width: 180px; flex: 1">
+            <label for="genderInput">性别（必填）</label>
+            <select id="genderInput">
+              <option value="">请选择</option>
+              <option value="男">男</option>
+              <option value="女">女</option>
+              <option value="其他">其他</option>
+              <option value="不方便透露">不方便透露</option>
+            </select>
+          </div>
+          <div class="field" style="min-width: 140px; flex: 1">
+            <label for="ageInput">年龄（必填）</label>
+            <input id="ageInput" type="number" min="1" max="120" step="1" placeholder="例如：22" />
+          </div>
+        </div>
+        <div class="row" style="margin-top: 10px">
+          <div class="field" style="width: 100%">
+            <label for="reasoningInput">决策思路（选填，为什么做上述选择）</label>
+            <textarea id="reasoningInput" placeholder="可填写你的判断依据、风险偏好或选择原因"></textarea>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 10px">
+          <div class="field" style="min-width: 260px; flex: 1">
+            <label for="contactEmailInput">邮箱（选填，用于抽奖联系）</label>
+            <input id="contactEmailInput" type="text" placeholder="例如：name@example.com" autocomplete="off" />
+          </div>
+          <div class="field" style="min-width: 260px; flex: 1">
+            <label for="contactAddressInput">地址（选填，用于奖品邮寄）</label>
+            <input id="contactAddressInput" type="text" placeholder="例如：XX省XX市XX区..." autocomplete="off" />
+          </div>
+        </div>
+        <div class="hr"></div>
         <div class="row">
           <button class="btn-ok" id="btnExit">退出并提交/下载</button>
           <button class="btn-secondary" id="btnBackToStart">返回开始页</button>
@@ -353,7 +454,7 @@
        * - 不配置：只支持本地下载 CSV（你手动汇总）
        * - 配置：完成后自动 POST 到你的 Google Apps Script Web App
        */
-      const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbytBYY9hiyI7-J55rY2J7YIgsSwlsee6alYZ909x-Y8h3an917ohuSpNaPs5Getr1Foeg/exec"
+      const SUBMIT_URL = ""; // 例如：https://script.google.com/macros/s/xxxx/exec
 
       const TOTAL_ROUNDS = 10;
 
@@ -384,6 +485,12 @@
       const btnExit = $("btnExit");
       const btnBackToStart = $("btnBackToStart");
       const doneSubmitText = $("doneSubmitText");
+      const majorInput = $("majorInput");
+      const genderInput = $("genderInput");
+      const ageInput = $("ageInput");
+      const reasoningInput = $("reasoningInput");
+      const contactEmailInput = $("contactEmailInput");
+      const contactAddressInput = $("contactAddressInput");
 
       const state = {
         participantId: "",
@@ -393,6 +500,12 @@
         round: 1,
         payoffs: Array(TOTAL_ROUNDS).fill(null),
         lastGeneratedRandom: null,
+        major: "",
+        gender: "",
+        age: "",
+        reasoning: "",
+        contactEmail: "",
+        contactAddress: "",
       };
 
       function newId() {
@@ -535,12 +648,48 @@
         state.round = 1;
         state.payoffs = Array(TOTAL_ROUNDS).fill(null);
         state.lastGeneratedRandom = null;
+        state.major = "";
+        state.gender = "";
+        state.age = "";
+        state.reasoning = "";
+        state.contactEmail = "";
+        state.contactAddress = "";
+        majorInput.value = "";
+        genderInput.value = "";
+        ageInput.value = "";
+        reasoningInput.value = "";
+        contactEmailInput.value = "";
+        contactAddressInput.value = "";
         initTable();
         renderTablePayoffs();
         renderOptionsForRound(1);
         doneSubmitText.textContent = "尚未提交。";
         setVisible("start");
         updateHeader();
+      }
+
+      function collectFinalForm() {
+        const major = (majorInput.value || "").trim();
+        const gender = genderInput.value || "";
+        const ageRaw = (ageInput.value || "").trim();
+        const ageNum = Number(ageRaw);
+        const reasoning = (reasoningInput.value || "").trim();
+
+        if (!gender) return { ok: false, message: "请选择性别。" };
+        if (!Number.isInteger(ageNum) || ageNum < 1 || ageNum > 120) {
+          return { ok: false, message: "请填写有效年龄（1-120整数）。" };
+        }
+
+        state.major = major;
+        state.gender = gender;
+        state.age = ageNum;
+        state.reasoning = reasoning;
+        return { ok: true };
+      }
+
+      function collectLotteryForm() {
+        state.contactEmail = (contactEmailInput.value || "").trim();
+        state.contactAddress = (contactAddressInput.value || "").trim();
       }
 
       function toCSVRow(row) {
@@ -559,6 +708,12 @@
           "nickname",
           "startedAt",
           "completedAt",
+          "major",
+          "gender",
+          "age",
+          "reasoning",
+          "contactEmail",
+          "contactAddress",
           ...Array.from({ length: TOTAL_ROUNDS }, (_, i) => `round${i + 1}`),
           "userAgent",
           "timezone",
@@ -568,6 +723,12 @@
           state.nickname,
           state.startedAt ? state.startedAt.toISOString() : "",
           state.completedAt ? state.completedAt.toISOString() : "",
+          state.major,
+          state.gender,
+          state.age,
+          state.reasoning,
+          state.contactEmail,
+          state.contactAddress,
           ...state.payoffs.map((x) => (x == null ? "" : x)),
           navigator.userAgent,
           Intl.DateTimeFormat().resolvedOptions().timeZone || "",
@@ -596,6 +757,12 @@
           nickname: state.nickname,
           startedAt: state.startedAt ? state.startedAt.toISOString() : null,
           completedAt: state.completedAt ? state.completedAt.toISOString() : null,
+          major: state.major,
+          gender: state.gender,
+          age: state.age,
+          reasoning: state.reasoning,
+          contactEmail: state.contactEmail,
+          contactAddress: state.contactAddress,
           payoffs: state.payoffs.slice(),
           meta: {
             userAgent: navigator.userAgent,
@@ -663,6 +830,12 @@
           "nickname",
           "startedAt",
           "completedAt",
+          "major",
+          "gender",
+          "age",
+          "reasoning",
+          "contactEmail",
+          "contactAddress",
           ...Array.from({ length: TOTAL_ROUNDS }, (_, i) => `round${i + 1}`),
           "userAgent",
           "timezone",
@@ -671,6 +844,13 @@
       });
 
       btnExit.addEventListener("click", async () => {
+        const form = collectFinalForm();
+        if (!form.ok) {
+          doneSubmitText.textContent = form.message;
+          return;
+        }
+        collectLotteryForm();
+
         // 始终下载一份 CSV 备份
         const csv = buildCSV();
         downloadCSV(`${state.participantId}.csv`, csv);
