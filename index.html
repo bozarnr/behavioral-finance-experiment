@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>10 轮实验</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #0b1220;
+        --panel: rgba(255, 255, 255, 0.08);
+        --panel2: rgba(255, 255, 255, 0.06);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.72);
+        --border: rgba(255, 255, 255, 0.16);
+        --primary: #6ee7ff;
+        --danger: #ff6e8a;
+        --ok: #79ffa8;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Helvetica, Arial,
+          "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 600px at 10% 10%, rgba(110, 231, 255, 0.18), transparent 55%),
+          radial-gradient(900px 500px at 90% 30%, rgba(121, 255, 168, 0.12), transparent 55%),
+          radial-gradient(900px 500px at 50% 100%, rgba(255, 110, 138, 0.10), transparent 50%), var(--bg);
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px 16px 64px;
+      }
+      .top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .title {
+        font-weight: 750;
+        letter-spacing: 0.2px;
+        margin: 0;
+        font-size: 22px;
+      }
+      .badge {
+        font-size: 12px;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 999px;
+        color: var(--muted);
+      }
+      .card {
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--panel), var(--panel2));
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 16px 60px rgba(0, 0, 0, 0.35);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 16px;
+      }
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+      label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      input[type="text"] {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        color: var(--text);
+        outline: none;
+      }
+      input[type="text"]:focus {
+        border-color: rgba(110, 231, 255, 0.45);
+        box-shadow: 0 0 0 4px rgba(110, 231, 255, 0.10);
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(110, 231, 255, 0.35);
+        background: rgba(110, 231, 255, 0.12);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-weight: 650;
+        letter-spacing: 0.2px;
+        cursor: pointer;
+        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      }
+      button:hover {
+        background: rgba(110, 231, 255, 0.16);
+        transform: translateY(-1px);
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-secondary {
+        border-color: rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .btn-danger {
+        border-color: rgba(255, 110, 138, 0.45);
+        background: rgba(255, 110, 138, 0.14);
+      }
+      .btn-ok {
+        border-color: rgba(121, 255, 168, 0.40);
+        background: rgba(121, 255, 168, 0.12);
+      }
+      .hr {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.10);
+        margin: 14px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.12);
+      }
+      th,
+      td {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 10px 8px;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+        padding-left: 10px;
+        width: 110px;
+        color: var(--muted);
+      }
+      .pill {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        padding: 8px 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .status {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .notice {
+        border: 1px dashed rgba(255, 255, 255, 0.22);
+        border-radius: 14px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .opts {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .opt {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .opt strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 2px;
+        color: var(--text);
+      }
+      .opt .desc {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .opt input {
+        transform: translateY(3px);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+      .small {
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <h1 class="title">实验任务（10 轮）</h1>
+        <div class="badge" id="badge">未开始</div>
+      </div>
+
+      <div class="card" id="screenStart">
+        <div class="grid">
+          <div>
+            <div class="notice">
+              <div><strong>说明</strong></div>
+              <div class="small">
+                点击“开始”进入实验。每轮选择一个选项后，会把对应收益写入上方表格并自动进入下一轮，直到 10 轮完成。
+              </div>
+              <div class="small" style="margin-top: 6px">
+                本页面支持把数据提交到后台汇总（Google Sheet / Excel），也支持本地下载备份 CSV。
+              </div>
+            </div>
+            <div class="hr"></div>
+            <div class="row">
+              <div class="field" style="min-width: 320px; flex: 1">
+                <label for="nickname">参与者编号/昵称（可选）</label>
+                <input id="nickname" type="text" placeholder="例如：A01（可不填）" autocomplete="off" />
+              </div>
+              <div class="field" style="min-width: 320px; flex: 1">
+                <label>系统生成 ID（自动）</label>
+                <div class="pill"><span class="mono" id="pid"></span></div>
+              </div>
+            </div>
+            <div class="hr"></div>
+            <div class="row">
+              <button id="btnStart">开始</button>
+              <button class="btn-secondary" id="btnDownloadTemplate">下载空模板 CSV</button>
+            </div>
+          </div>
+
+          <div class="status">
+            <div class="notice">
+              <div><strong>后台收集（可选）</strong></div>
+              <div class="small" style="margin-top: 6px">
+                若你已配置后台接收地址，则完成后会自动提交。
+              </div>
+              <div class="small" style="margin-top: 6px">
+                当前提交地址：
+                <span class="mono" id="submitUrlLabel"></span>
+              </div>
+              <div class="small" style="margin-top: 6px">
+                状态：<span id="submitState">未配置</span>
+              </div>
+            </div>
+            <div class="notice">
+              <div><strong>隐私</strong></div>
+              <div class="small" style="margin-top: 6px">
+                建议不要收集真实姓名/手机号。此页面默认只记录：参与者ID、时间戳、每轮收益、浏览器信息（用于排错）。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card hidden" id="screenExp">
+        <div class="row" style="justify-content: space-between; margin-bottom: 10px">
+          <div class="pill">
+            当前轮次：<span class="mono" id="roundLabel">1</span>/10
+          </div>
+          <div class="pill">
+            参与者：<span class="mono" id="whoLabel"></span>
+          </div>
+        </div>
+
+        <table aria-label="2x11 表格">
+          <thead>
+            <tr id="tableRounds">
+              <th>轮次</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="tablePayoffs">
+              <td>收益</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="hr"></div>
+
+        <div class="notice">
+          <strong>请选择一个选项</strong>
+          <div class="small" style="margin-top: 6px">选中后点击“确认并进入下一轮”。</div>
+        </div>
+
+        <div class="opts" id="options"></div>
+
+        <div class="hr"></div>
+        <div class="row">
+          <button id="btnConfirm" disabled>确认并进入下一轮</button>
+          <button class="btn-secondary" id="btnDownloadNow">下载当前数据 CSV</button>
+          <button class="btn-danger" id="btnReset">清空重来</button>
+        </div>
+        <div class="small muted" id="hint" style="margin-top: 10px"></div>
+      </div>
+
+      <div class="card hidden" id="screenDone">
+        <div class="notice">
+          <div><strong>已完成 10 轮</strong></div>
+          <div class="small" style="margin-top: 6px">
+            你可以点击“退出并提交/下载”，系统将尝试把数据提交到后台（若已配置），并下载一份 CSV 备份。
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="row">
+          <button class="btn-ok" id="btnExit">退出并提交/下载</button>
+          <button class="btn-secondary" id="btnBackToStart">返回开始页</button>
+        </div>
+        <div class="hr"></div>
+        <div class="notice">
+          <div><strong>提交结果</strong></div>
+          <div class="small" style="margin-top: 6px" id="doneSubmitText">尚未提交。</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /**
+       * 后台接收地址（可选）
+       * - 不配置：只支持本地下载 CSV（你手动汇总）
+       * - 配置：完成后自动 POST 到你的 Google Apps Script Web App
+       */
+      const SUBMIT_URL = ""; // 例如：https://script.google.com/macros/s/xxxx/exec
+
+      const TOTAL_ROUNDS = 10;
+
+      const $ = (id) => document.getElementById(id);
+      const screenStart = $("screenStart");
+      const screenExp = $("screenExp");
+      const screenDone = $("screenDone");
+
+      const badge = $("badge");
+      const pidEl = $("pid");
+      const submitUrlLabel = $("submitUrlLabel");
+      const submitState = $("submitState");
+
+      const nicknameInput = $("nickname");
+      const roundLabel = $("roundLabel");
+      const whoLabel = $("whoLabel");
+      const tableRounds = $("tableRounds");
+      const tablePayoffs = $("tablePayoffs");
+      const optionsEl = $("options");
+      const hintEl = $("hint");
+
+      const btnStart = $("btnStart");
+      const btnConfirm = $("btnConfirm");
+      const btnReset = $("btnReset");
+      const btnDownloadNow = $("btnDownloadNow");
+      const btnDownloadTemplate = $("btnDownloadTemplate");
+
+      const btnExit = $("btnExit");
+      const btnBackToStart = $("btnBackToStart");
+      const doneSubmitText = $("doneSubmitText");
+
+      const state = {
+        participantId: "",
+        nickname: "",
+        startedAt: null,
+        completedAt: null,
+        round: 1,
+        payoffs: Array(TOTAL_ROUNDS).fill(null),
+        lastGeneratedRandom: null,
+      };
+
+      function newId() {
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+        const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+        return `P-${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}`;
+      }
+
+      function setVisible(which) {
+        screenStart.classList.toggle("hidden", which !== "start");
+        screenExp.classList.toggle("hidden", which !== "exp");
+        screenDone.classList.toggle("hidden", which !== "done");
+      }
+
+      function updateHeader() {
+        if (!state.startedAt) badge.textContent = "未开始";
+        else if (!state.completedAt) badge.textContent = `进行中：第 ${state.round} 轮`;
+        else badge.textContent = "已完成";
+      }
+
+      function initTable() {
+        // 2x11：第一行“轮次”+ 10 列；第二行“收益”+ 10 列
+        tableRounds.innerHTML = "<th>轮次</th>";
+        tablePayoffs.innerHTML = "<td>收益</td>";
+        for (let i = 1; i <= TOTAL_ROUNDS; i++) {
+          const th = document.createElement("th");
+          th.textContent = String(i);
+          tableRounds.appendChild(th);
+
+          const td = document.createElement("td");
+          td.textContent = "";
+          td.dataset.round = String(i);
+          tablePayoffs.appendChild(td);
+        }
+      }
+
+      function payoffCell(round) {
+        return tablePayoffs.querySelector(`td[data-round="${round}"]`);
+      }
+
+      function renderTablePayoffs() {
+        for (let i = 1; i <= TOTAL_ROUNDS; i++) {
+          const v = state.payoffs[i - 1];
+          const td = payoffCell(i);
+          td.textContent = v == null ? "" : String(v);
+        }
+      }
+
+      function renderOptionsForRound(round) {
+        state.lastGeneratedRandom = null;
+        btnConfirm.disabled = true;
+        optionsEl.innerHTML = "";
+        hintEl.textContent = "";
+
+        const name = "choice";
+        const fixed = {
+          id: "fixed5",
+          title: "选项 A：固定收益 5",
+          desc: "选择后本轮收益固定为 5。",
+        };
+        const random = {
+          id: "rand1to10",
+          title: "选项 B：随机收益（1-10整数）",
+          desc: "选择后系统生成一个 1-10 的整数作为本轮收益。",
+        };
+
+        for (const opt of [fixed, random]) {
+          const wrap = document.createElement("label");
+          wrap.className = "opt";
+          wrap.htmlFor = opt.id;
+
+          const radio = document.createElement("input");
+          radio.type = "radio";
+          radio.name = name;
+          radio.id = opt.id;
+          radio.value = opt.id;
+
+          const box = document.createElement("div");
+          const t = document.createElement("strong");
+          t.textContent = opt.title;
+          const d = document.createElement("div");
+          d.className = "desc";
+          d.textContent = opt.desc;
+          box.appendChild(t);
+          box.appendChild(d);
+
+          radio.addEventListener("change", () => {
+            btnConfirm.disabled = false;
+            if (radio.value === "rand1to10") {
+              const r = 1 + Math.floor(Math.random() * 10);
+              state.lastGeneratedRandom = r;
+              hintEl.textContent = `本轮将记录随机收益：${r}（确认后写入表格）`;
+            } else {
+              state.lastGeneratedRandom = null;
+              hintEl.textContent = "本轮将记录固定收益：5（确认后写入表格）";
+            }
+          });
+
+          wrap.appendChild(radio);
+          wrap.appendChild(box);
+          optionsEl.appendChild(wrap);
+        }
+      }
+
+      function currentChoice() {
+        const el = optionsEl.querySelector('input[name="choice"]:checked');
+        return el ? el.value : null;
+      }
+
+      function computePayoff(choice) {
+        if (choice === "fixed5") return 5;
+        if (choice === "rand1to10") {
+          if (Number.isInteger(state.lastGeneratedRandom)) return state.lastGeneratedRandom;
+          return 1 + Math.floor(Math.random() * 10);
+        }
+        return null;
+      }
+
+      function startExperiment() {
+        state.nickname = (nicknameInput.value || "").trim();
+        state.startedAt = new Date();
+        state.completedAt = null;
+        state.round = 1;
+        state.payoffs = Array(TOTAL_ROUNDS).fill(null);
+        initTable();
+        renderTablePayoffs();
+        roundLabel.textContent = String(state.round);
+        whoLabel.textContent = state.nickname ? `${state.nickname} / ${state.participantId}` : state.participantId;
+        renderOptionsForRound(state.round);
+        setVisible("exp");
+        updateHeader();
+      }
+
+      function resetAll() {
+        state.nickname = "";
+        nicknameInput.value = "";
+        state.startedAt = null;
+        state.completedAt = null;
+        state.round = 1;
+        state.payoffs = Array(TOTAL_ROUNDS).fill(null);
+        state.lastGeneratedRandom = null;
+        initTable();
+        renderTablePayoffs();
+        renderOptionsForRound(1);
+        doneSubmitText.textContent = "尚未提交。";
+        setVisible("start");
+        updateHeader();
+      }
+
+      function toCSVRow(row) {
+        return row
+          .map((v) => {
+            const s = v == null ? "" : String(v);
+            if (/[,"\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
+            return s;
+          })
+          .join(",");
+      }
+
+      function buildCSV() {
+        const header = [
+          "participantId",
+          "nickname",
+          "startedAt",
+          "completedAt",
+          ...Array.from({ length: TOTAL_ROUNDS }, (_, i) => `round${i + 1}`),
+          "userAgent",
+          "timezone",
+        ];
+        const row = [
+          state.participantId,
+          state.nickname,
+          state.startedAt ? state.startedAt.toISOString() : "",
+          state.completedAt ? state.completedAt.toISOString() : "",
+          ...state.payoffs.map((x) => (x == null ? "" : x)),
+          navigator.userAgent,
+          Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+        ];
+        return [toCSVRow(header), toCSVRow(row)].join("\n");
+      }
+
+      function downloadCSV(filename, csvText) {
+        const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      async function submitIfConfigured() {
+        if (!SUBMIT_URL) {
+          return { ok: false, skipped: true, message: "未配置提交地址，已跳过提交。" };
+        }
+        const payload = {
+          participantId: state.participantId,
+          nickname: state.nickname,
+          startedAt: state.startedAt ? state.startedAt.toISOString() : null,
+          completedAt: state.completedAt ? state.completedAt.toISOString() : null,
+          payoffs: state.payoffs.slice(),
+          meta: {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+            referrer: document.referrer || "",
+            href: location.href,
+          },
+        };
+
+        try {
+          const res = await fetch(SUBMIT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            mode: "cors",
+          });
+          const text = await res.text();
+          if (!res.ok) return { ok: false, skipped: false, message: `提交失败：HTTP ${res.status} ${text}` };
+          return { ok: true, skipped: false, message: `提交成功：${text || "OK"}` };
+        } catch (e) {
+          return { ok: false, skipped: false, message: `提交异常：${e && e.message ? e.message : String(e)}` };
+        }
+      }
+
+      function finishExperiment() {
+        state.completedAt = new Date();
+        setVisible("done");
+        updateHeader();
+      }
+
+      btnStart.addEventListener("click", () => startExperiment());
+
+      btnConfirm.addEventListener("click", () => {
+        const choice = currentChoice();
+        const payoff = computePayoff(choice);
+        if (payoff == null) return;
+
+        state.payoffs[state.round - 1] = payoff;
+        renderTablePayoffs();
+
+        if (state.round >= TOTAL_ROUNDS) {
+          finishExperiment();
+          return;
+        }
+        state.round += 1;
+        roundLabel.textContent = String(state.round);
+        renderOptionsForRound(state.round);
+        updateHeader();
+      });
+
+      btnReset.addEventListener("click", () => {
+        if (!confirm("确定要清空并重新开始吗？")) return;
+        resetAll();
+      });
+
+      btnDownloadNow.addEventListener("click", () => {
+        const csv = buildCSV();
+        downloadCSV(`${state.participantId}.csv`, csv);
+      });
+
+      btnDownloadTemplate.addEventListener("click", () => {
+        const header = [
+          "participantId",
+          "nickname",
+          "startedAt",
+          "completedAt",
+          ...Array.from({ length: TOTAL_ROUNDS }, (_, i) => `round${i + 1}`),
+          "userAgent",
+          "timezone",
+        ];
+        downloadCSV("template.csv", toCSVRow(header) + "\n");
+      });
+
+      btnExit.addEventListener("click", async () => {
+        // 始终下载一份 CSV 备份
+        const csv = buildCSV();
+        downloadCSV(`${state.participantId}.csv`, csv);
+
+        doneSubmitText.textContent = "正在提交...";
+        const r = await submitIfConfigured();
+        doneSubmitText.textContent = r.message;
+      });
+
+      btnBackToStart.addEventListener("click", () => {
+        setVisible("start");
+        updateHeader();
+      });
+
+      function init() {
+        state.participantId = newId();
+        pidEl.textContent = state.participantId;
+        submitUrlLabel.textContent = SUBMIT_URL || "（未配置）";
+        submitState.textContent = SUBMIT_URL ? "已配置（完成后可提交）" : "未配置（仅本地下载）";
+        initTable();
+        renderTablePayoffs();
+        setVisible("start");
+        updateHeader();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
