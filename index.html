@@ -293,10 +293,10 @@
             <div class="notice">
               <div><strong>说明</strong></div>
               <div class="small">
-                点击“开始”进入实验。每轮选择一个选项后，会把对应收益写入上方表格并自动进入下一轮，直到 10 轮完成。
+                点击"开始"进入实验。每轮选择一个选项后，会把对应收益写入上方表格并自动进入下一轮，直到 10 轮完成。
               </div>
               <div class="small" style="margin-top: 6px">
-                本页面支持把数据提交到后台汇总（Google Sheet / Excel），也支持本地下载备份 CSV。
+                请将结果发送至QQ群excel或邮箱newmanholiday@gmail.com以领取您的分析报告和参与抽奖，也支持本地下载备份 CSV。
               </div>
             </div>
             <div class="hr"></div>
@@ -334,7 +334,7 @@
             <div class="notice">
               <div><strong>隐私</strong></div>
               <div class="small" style="margin-top: 6px">
-                此页面不收集个人隐私信息，只记录：参与者ID、时间戳、每轮收益、浏览器信息（用于排错）。
+                不收集真实姓名/手机号。此页面只记录：参与者ID、时间戳、每轮收益、浏览器信息（用于排错）。
               </div>
             </div>
           </div>
@@ -370,7 +370,7 @@
 
         <div class="notice">
           <strong>请选择一个选项</strong>
-          <div class="small" style="margin-top: 6px">选中后点击“确认并进入下一轮”。</div>
+          <div class="small" style="margin-top: 6px">选中后点击"确认并进入下一轮"。</div>
         </div>
 
         <div class="opts" id="options"></div>
@@ -388,30 +388,21 @@
         <div class="notice">
           <div><strong>已完成 10 轮</strong></div>
           <div class="small" style="margin-top: 6px">
-            你可以点击“退出并提交/下载”，系统将尝试把数据提交到后台（若已配置），并下载一份 CSV 备份。
-          </div>
-        </div>
-        <div class="hr"></div>
-        <div class="notice">
-          <div><strong>抽奖说明（选填联系方式）</strong></div>
-          <div class="small" style="margin-top: 6px">
-            如希望领取个人投资风险报告、参与抽奖并进行进一步投资偏好自测，请将结果发送至QQ群在线表格或邮箱newmanholiday@gmail.com。我们将从参与者中抽取约一半的幸运参与者，赠送线上与实物奖品，包括 Sony 音响、蓝牙耳机、金融相关书籍以及量化模型学习资料。
+            你可以点击"退出并提交/下载"，系统将尝试把数据提交到后台（若已配置），并下载一份 CSV 备份。
           </div>
         </div>
         <div class="hr"></div>
         <div class="row">
           <div class="field" style="min-width: 220px; flex: 1">
-            <label for="majorInput">专业或是否有投资经验（选填）</label>
+            <label for="majorInput">专业（选填）</label>
             <input id="majorInput" type="text" placeholder="例如：金融工程" autocomplete="off" />
           </div>
           <div class="field" style="min-width: 180px; flex: 1">
             <label for="genderInput">性别（必填）</label>
-            <select id="genderInput">
+            <select id="genderInput" style="color: #000;">
               <option value="">请选择</option>
               <option value="男">男</option>
               <option value="女">女</option>
-              <option value="其他">其他</option>
-              <option value="不方便透露">不方便透露</option>
             </select>
           </div>
           <div class="field" style="min-width: 140px; flex: 1">
@@ -423,16 +414,6 @@
           <div class="field" style="width: 100%">
             <label for="reasoningInput">决策思路（选填，为什么做上述选择）</label>
             <textarea id="reasoningInput" placeholder="可填写你的判断依据、风险偏好或选择原因"></textarea>
-          </div>
-        </div>
-        <div class="row" style="margin-top: 10px">
-          <div class="field" style="min-width: 260px; flex: 1">
-            <label for="contactEmailInput">邮箱（选填，用于抽奖联系）</label>
-            <input id="contactEmailInput" type="text" placeholder="例如：name@example.com" autocomplete="off" />
-          </div>
-          <div class="field" style="min-width: 260px; flex: 1">
-            <label for="contactAddressInput">地址（选填，用于奖品邮寄）</label>
-            <input id="contactAddressInput" type="text" placeholder="例如：XX省XX市XX区..." autocomplete="off" />
           </div>
         </div>
         <div class="hr"></div>
@@ -454,7 +435,7 @@
        * - 不配置：只支持本地下载 CSV（你手动汇总）
        * - 配置：完成后自动 POST 到你的 Google Apps Script Web App
        */
-      const SUBMIT_URL = ""; // 例如：https://script.google.com/macros/s/xxxx/exec
+      const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbziBsdwPODTgJmku0fKiTzAmhdQt1pE5TJllvXFhjeT4wj5dB9AfBziEAtNcItGNNiR/exec"; // 例如：https://script.google.com/macros/s/xxxx/exec
 
       const TOTAL_ROUNDS = 10;
 
@@ -489,8 +470,6 @@
       const genderInput = $("genderInput");
       const ageInput = $("ageInput");
       const reasoningInput = $("reasoningInput");
-      const contactEmailInput = $("contactEmailInput");
-      const contactAddressInput = $("contactAddressInput");
 
       const state = {
         participantId: "",
@@ -504,8 +483,6 @@
         gender: "",
         age: "",
         reasoning: "",
-        contactEmail: "",
-        contactAddress: "",
       };
 
       function newId() {
@@ -528,7 +505,7 @@
       }
 
       function initTable() {
-        // 2x11：第一行“轮次”+ 10 列；第二行“收益”+ 10 列
+        // 2x11：第一行"轮次"+ 10 列；第二行"收益"+ 10 列
         tableRounds.innerHTML = "<th>轮次</th>";
         tablePayoffs.innerHTML = "<td>收益</td>";
         for (let i = 1; i <= TOTAL_ROUNDS; i++) {
@@ -563,9 +540,9 @@
 
         const name = "choice";
         const fixed = {
-          id: "fixed5",
-          title: "选项 A：固定收益 5",
-          desc: "选择后本轮收益固定为 5。",
+          id: "fixed5.5",
+          title: "选项 A：固定收益 5.5",
+          desc: "选择后本轮收益固定为 5.5。",
         };
         const random = {
           id: "rand1to10",
@@ -598,10 +575,10 @@
             if (radio.value === "rand1to10") {
               const r = 1 + Math.floor(Math.random() * 10);
               state.lastGeneratedRandom = r;
-              hintEl.textContent = `本轮将记录随机收益：${r}（确认后写入表格）`;
+             
             } else {
               state.lastGeneratedRandom = null;
-              hintEl.textContent = "本轮将记录固定收益：5（确认后写入表格）";
+              
             }
           });
 
@@ -617,7 +594,7 @@
       }
 
       function computePayoff(choice) {
-        if (choice === "fixed5") return 5;
+        if (choice === "fixed5.5") return 5.5;
         if (choice === "rand1to10") {
           if (Number.isInteger(state.lastGeneratedRandom)) return state.lastGeneratedRandom;
           return 1 + Math.floor(Math.random() * 10);
@@ -652,14 +629,10 @@
         state.gender = "";
         state.age = "";
         state.reasoning = "";
-        state.contactEmail = "";
-        state.contactAddress = "";
         majorInput.value = "";
         genderInput.value = "";
         ageInput.value = "";
         reasoningInput.value = "";
-        contactEmailInput.value = "";
-        contactAddressInput.value = "";
         initTable();
         renderTablePayoffs();
         renderOptionsForRound(1);
@@ -687,11 +660,6 @@
         return { ok: true };
       }
 
-      function collectLotteryForm() {
-        state.contactEmail = (contactEmailInput.value || "").trim();
-        state.contactAddress = (contactAddressInput.value || "").trim();
-      }
-
       function toCSVRow(row) {
         return row
           .map((v) => {
@@ -712,8 +680,6 @@
           "gender",
           "age",
           "reasoning",
-          "contactEmail",
-          "contactAddress",
           ...Array.from({ length: TOTAL_ROUNDS }, (_, i) => `round${i + 1}`),
           "userAgent",
           "timezone",
@@ -727,8 +693,6 @@
           state.gender,
           state.age,
           state.reasoning,
-          state.contactEmail,
-          state.contactAddress,
           ...state.payoffs.map((x) => (x == null ? "" : x)),
           navigator.userAgent,
           Intl.DateTimeFormat().resolvedOptions().timeZone || "",
@@ -752,6 +716,8 @@
         if (!SUBMIT_URL) {
           return { ok: false, skipped: true, message: "未配置提交地址，已跳过提交。" };
         }
+        
+        // 准备提交的数据
         const payload = {
           participantId: state.participantId,
           nickname: state.nickname,
@@ -761,28 +727,31 @@
           gender: state.gender,
           age: state.age,
           reasoning: state.reasoning,
-          contactEmail: state.contactEmail,
-          contactAddress: state.contactAddress,
-          payoffs: state.payoffs.slice(),
-          meta: {
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
-            referrer: document.referrer || "",
-            href: location.href,
-          },
+          payoffs: JSON.stringify(state.payoffs), // 将数组转为JSON字符串
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+          referrer: document.referrer || "",
+          href: location.href,
         };
 
         try {
-          const res = await fetch(SUBMIT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-            mode: "cors",
+          // 将数据添加到URL参数中
+          const url = new URL(SUBMIT_URL);
+          for (const [key, value] of Object.entries(payload)) {
+            if (value != null) {
+              url.searchParams.set(key, value);
+            }
+          }
+          
+          // 使用GET请求发送数据
+          const res = await fetch(url, {
+            method: "GET",
+            mode: "no-cors", // 使用 no-cors 模式绕过跨域限制
           });
-          const text = await res.text();
-          if (!res.ok) return { ok: false, skipped: false, message: `提交失败：HTTP ${res.status} ${text}` };
-          return { ok: true, skipped: false, message: `提交成功：${text || "OK"}` };
+          
+          // 注意：由于使用了 no-cors，我们无法获取响应内容，所以总是显示成功
+          return { ok: true, skipped: false, message: "提交请求已发送（可能需要几秒钟处理时间）" };
         } catch (e) {
           return { ok: false, skipped: false, message: `提交异常：${e && e.message ? e.message : String(e)}` };
         }
@@ -834,8 +803,6 @@
           "gender",
           "age",
           "reasoning",
-          "contactEmail",
-          "contactAddress",
           ...Array.from({ length: TOTAL_ROUNDS }, (_, i) => `round${i + 1}`),
           "userAgent",
           "timezone",
@@ -849,7 +816,6 @@
           doneSubmitText.textContent = form.message;
           return;
         }
-        collectLotteryForm();
 
         // 始终下载一份 CSV 备份
         const csv = buildCSV();
@@ -880,3 +846,5 @@
     </script>
   </body>
 </html>
+
+
