@@ -392,6 +392,27 @@
           </div>
         </div>
         <div class="hr"></div>
+        <div class="notice">
+          <div><strong>你的实验结果（含第 10 轮）</strong></div>
+          <div class="small" style="margin-top: 6px" id="doneSummaryText">（加载中…）</div>
+          <div class="small muted" style="margin-top: 6px">提示：可左右滑动查看完整 10 轮表格。</div>
+          <div class="hr"></div>
+          <div class="table-scroll" aria-label="10轮收益表（结束页）">
+            <table>
+              <thead>
+                <tr id="tableRoundsDone">
+                  <th>轮次</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="tablePayoffsDone">
+                  <td>收益</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="hr"></div>
         <div class="row">
           <div class="field" style="min-width: 220px; flex: 1">
             <label for="majorInput">专业（选填）</label>
@@ -470,6 +491,9 @@
       const genderInput = $("genderInput");
       const ageInput = $("ageInput");
       const reasoningInput = $("reasoningInput");
+      const doneSummaryText = $("doneSummaryText");
+      const tableRoundsDone = $("tableRoundsDone");
+      const tablePayoffsDone = $("tablePayoffsDone");
 
       const state = {
         participantId: "",
@@ -518,6 +542,45 @@
           td.dataset.round = String(i);
           tablePayoffs.appendChild(td);
         }
+      }
+
+      function initDoneTable() {
+        tableRoundsDone.innerHTML = "<th>轮次</th>";
+        tablePayoffsDone.innerHTML = "<td>收益</td>";
+        for (let i = 1; i <= TOTAL_ROUNDS; i++) {
+          const th = document.createElement("th");
+          th.textContent = String(i);
+          tableRoundsDone.appendChild(th);
+
+          const td = document.createElement("td");
+          td.textContent = "";
+          td.dataset.round = String(i);
+          tablePayoffsDone.appendChild(td);
+        }
+      }
+
+      function payoffCellInRow(rowEl, round) {
+        return rowEl.querySelector(`td[data-round="${round}"]`);
+      }
+
+      function renderDoneTablePayoffs() {
+        for (let i = 1; i <= TOTAL_ROUNDS; i++) {
+          const v = state.payoffs[i - 1];
+          const td = payoffCellInRow(tablePayoffsDone, i);
+          if (td) td.textContent = v == null ? "" : String(v);
+        }
+      }
+
+      function sumPayoffs() {
+        return state.payoffs.reduce((acc, v) => (typeof v === "number" ? acc + v : acc), 0);
+      }
+
+      function renderDoneSummary() {
+        const r10 = state.payoffs[TOTAL_ROUNDS - 1];
+        const total = sumPayoffs();
+        const r10Text = r10 == null ? "（未记录）" : String(r10);
+        doneSummaryText.textContent = `第 10 轮收益：${r10Text}；总收益：${total}`;
+        renderDoneTablePayoffs();
       }
 
       function payoffCell(round) {
@@ -760,6 +823,8 @@
       function finishExperiment() {
         state.completedAt = new Date();
         setVisible("done");
+        initDoneTable();
+        renderDoneSummary();
         updateHeader();
       }
 
